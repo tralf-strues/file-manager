@@ -93,7 +93,7 @@ Text* readTextFromFile(const char* fileName)
     assert(fileName != NULL);
 
     FILE* file = fopen(fileName, "r");
-    assert(file != NULL);
+    if (file == NULL) { return NULL; }
 
     Text* text = (Text*) calloc(1, sizeof(Text));
     assert(text != NULL);
