@@ -372,4 +372,6 @@ Text* makeTextCaseHomogeneous(Text* text, const char* flag)
     }
 
     text->currPos = oldCurrPos;
+
+    return text;
 }

@@ -1,0 +1,7 @@
+*.o
+*.out
+*.rar
+*.zip
+*.json
+.vscode
+vgcore.*
