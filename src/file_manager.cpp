@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
+#include <string.h>     
+#include <sys/stat.h>  
 
 #include "file_manager.h"
 
@@ -32,6 +32,38 @@ size_t getFileSize(const char* fileName)
     if (stat((char*) fileName, &fileStat) == -1) { return 0; }
 
     return (size_t) fileStat.st_size;
+}
+
+bool loadFile(const char* filename, char** buffer, size_t* bufferSize)
+{
+    assert(filename   != nullptr);
+    assert(buffer     != nullptr);
+    assert(bufferSize != nullptr);
+
+    FILE* file = fopen(filename, "r");
+    if (file == nullptr) { return false; }
+
+    size_t fileSize = getFileSize(filename);
+
+    *buffer = (char*) calloc(fileSize + 1, sizeof(char));
+    assert(*buffer != nullptr);
+
+    *bufferSize = fread(*buffer, sizeof(char), fileSize, file);
+    if (*bufferSize == 0) 
+    {
+        fclose(file);
+        free(*buffer);
+
+        *buffer = nullptr;
+
+        return false;
+    }
+
+    *(*buffer + *bufferSize) = '\0';
+
+    fclose(file);
+
+    return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -116,7 +148,7 @@ Text* readTextFromFile(const char* fileName)
     newTextBuffer[text->bytesCount] = '\0';
     text->buffer = newTextBuffer;
 
-    text->linesCount = replaceAllOccurences(text->buffer, text->bytesCount, '\n', '\0') + 1;
+    text->linesCount = replaceAllOccurrences(text->buffer, text->bytesCount, '\n', '\0') + 1;
     text->lines      = (char**) calloc(text->linesCount, sizeof(char*));
     assert(text->lines != NULL);
 
@@ -150,7 +182,7 @@ bool writeTextToFile(FILE* file, Text* text)
     assert(file != NULL);
     assert(text != NULL);
 
-    replaceAllOccurences(text->buffer, text->bytesCount, '\0', '\n');
+    replaceAllOccurrences(text->buffer, text->bytesCount, '\0', '\n');
 
     return fwrite(text->buffer, sizeof(char), text->bytesCount, file) == text->bytesCount;
 }
@@ -258,7 +290,7 @@ size_t getCurrentLineNumber(Text* text)
 //!
 //! @return number of replaced bytes.
 //-----------------------------------------------------------------------------
-size_t replaceAllOccurences(char* buffer, size_t bufferSize, char target, char replacement)
+size_t replaceAllOccurrences(char* buffer, size_t bufferSize, char target, char replacement)
 {
     assert(buffer != NULL);
 
